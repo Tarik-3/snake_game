@@ -2,6 +2,8 @@ class Snake {
 
     constructor(scene) {
         this.scene = scene;
+        this.lastTimeMove = 0;
+        this.moveInterval = 100;
         this.direction = Phaser.Math.Vector2.RIGHT;
         this.box = []
         this.box.push(this.scene.add.rectangle(10, 10, 17, 17, 0xff0000).setOrigin(0));
@@ -27,16 +29,30 @@ class Snake {
     
 
     update(time){
+        console.log(time, "time")
+        if(time >= this.lastTimeMove + this.moveInterval){
+            this.lastTimeMove = time;
+            this.move();
+        }
+    }
+    
+    move(){
         for( let i = 0 ; i< 2; i++) {
             this.box[i].x += this.direction.x;
             this.box[i].y += this.direction.y;
-
-
+    
+    
         }
         // console.log(this.box[0].x)
         if(this.box[0].x == 650){
-            this.box.forEach(p=> p.x = 0)
+            let c = 0;
+            this.box.forEach(p=> {
+               p.x = c;
+               c=+17;
+               console.log(p.x)
+            } )
         }
+
     }
 }
 
