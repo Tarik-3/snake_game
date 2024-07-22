@@ -1,13 +1,14 @@
 class Snake {
 
     constructor(scene) {
+        this.fois = 1;
         this.scene = scene;
         this.lastKey = 39;
         this.tilesize = 16;
         // this.appleX = 104;
         // this.appleY = 106;
         this.lastTimeMove = 0;
-        this.moveInterval = 50;
+        this.moveInterval = 250;
         this.direction = Phaser.Math.Vector2.RIGHT;
         this.box = []
         this.box.push(this.scene.add.rectangle(this.scene.game.config.width / 2,
@@ -71,33 +72,42 @@ class Snake {
     }
     
     wallRetourn() {
-        if(this.box[0].x >= 650){
+        if(this.box[0].x >= this.scene.game.config.width){
             this.box[0].x = 0
             
         }
         if(this.box[0].x <= -4){
-            this.box[0].x = 592
+            this.box[0].x = this.scene.game.config.width
             
         }
-        if(this.box[0].y <= -2){
-            this.box[0].y = 590
+        if(this.box[0].y <= 0){
+            this.box[0].y = this.scene.game.config.height - 14
             
         }
-        if(this.box[0].y >= 592){
+        if(this.box[0].y >= this.scene.game.config.height){
             this.box[0].y = -2
             
         }
     }
 
+    
+    acceleration() {
+        if (this.moveInterval >50){
+            console.log("moveInterv", this.moveInterval)
+            console.log("fois", this.fois)
+            this.moveInterval-= 10*this.fois
+            this.fois++;
+        }
+    }
 
     move(){
         
         let x = this.box[0].x + this.direction.x * this.tilesize;
         let y = this.box[0].y + this.direction.y * this.tilesize;
-        console.log(x, "x")
-        console.log(this.apple.x, "apple.x")
-        console.log(y, "y")
-        console.log(this.apple.y, "apple.y")
+        // console.log(x, "x")
+        // console.log(this.apple.x, "apple.x")
+        // console.log(y, "y")
+        // console.log(this.apple.y, "apple.y")
         
         if (this.apple.x === x && this.apple.y === y) {
             this.box.push(
@@ -106,6 +116,7 @@ class Snake {
                     .setOrigin(0)
             );
             this.positionApple();
+            this.acceleration()
         }
 
         for( let i = this.box.length - 1 ; i > 0; i--) {
@@ -118,11 +129,10 @@ class Snake {
         // console.log(this.box[0].x)
         this.wallRetourn();
 
-        console.log("coordX", this.box[0].x)
-        console.log("coordY", this.box[0].y)
-        if(this.box[0].x === this.apple.x && this.box[0].y === this.apple.y){
-            console.log("Growing")
-            this.box.push(this.scene.add.rectangle(250, 10, 17, 17, 0x0000ff).setOrigin(0));
+        let tail = this.box.slice(1);
+        if(tail.filter(s => s.x === this.box[0].x && s.y === this.box[0].y).length >0 
+        ) {
+            this.scene.scene.restart();
         }
 
     }
