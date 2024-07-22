@@ -12,8 +12,8 @@ class Snake {
         this.box = []
         this.box.push(this.scene.add.rectangle(this.scene.game.config.width / 2,
             this.scene.game.config.height / 2, this.tilesize, this.tilesize, 0xff0000).setOrigin(0));
-        this.box.push(this.scene.add.rectangle(25, 10, 17, 17, 0x0000ff).setOrigin(0));
-        this.box.push(this.scene.add.rectangle(10, 10, 17, 17, 0xffffff).setOrigin(0));
+        // this.box.push(this.scene.add.rectangle(25, 10, 17, 17, 0x0000ff).setOrigin(0));
+        // this.box.push(this.scene.add.rectangle(10, 10, 17, 17, 0xffffff).setOrigin(0));
         this.apple = this.scene.add.rectangle(0,0, this.tilesize, this.tilesize, 0x00ff00).setOrigin(0)
         this.positionApple();
         scene.input.keyboard.on('keydown',e => {
@@ -23,8 +23,11 @@ class Snake {
 
     positionApple() {
         console.log(this.apple)
-        this.apple.x = Math.floor(Math.random() * this.scene.game.config.width / this.tilesize) * this.tilesize;
-        this.apple.y = Math.floor(Math.random() * this.scene.game.config.height / this.tilesize) * this.tilesize;
+        this.apple.x = Math.floor(
+            (Math.random() * this.scene.game.config.width) / this.tilesize)
+             * this.tilesize;
+        this.apple.y = Math.floor(
+            (Math.random() * this.scene.game.config.height) / this.tilesize) * this.tilesize - 2;
     }
 
     keydown(event){
@@ -67,23 +70,54 @@ class Snake {
         }
     }
     
+    wallRetourn() {
+        if(this.box[0].x >= 650){
+            this.box[0].x = 0
+            
+        }
+        if(this.box[0].x <= -4){
+            this.box[0].x = 592
+            
+        }
+        if(this.box[0].y <= -2){
+            this.box[0].y = 590
+            
+        }
+        if(this.box[0].y >= 592){
+            this.box[0].y = -2
+            
+        }
+    }
+
+
     move(){
+        
+        let x = this.box[0].x + this.direction.x * this.tilesize;
+        let y = this.box[0].y + this.direction.y * this.tilesize;
+        console.log(x, "x")
+        console.log(this.apple.x, "apple.x")
+        console.log(y, "y")
+        console.log(this.apple.y, "apple.y")
+        
+        if (this.apple.x === x && this.apple.y === y) {
+            this.box.push(
+                this.scene.add
+                    .rectangle(0,0, this.tilesize, this.tilesize, 0xffffff)
+                    .setOrigin(0)
+            );
+            this.positionApple();
+        }
+
         for( let i = this.box.length - 1 ; i > 0; i--) {
             this.box[i].x = this.box[i-1].x;
             this.box[i].y = this.box[i-1].y;
             
         }
-            this.box[0].x += this.direction.x * 10;
-            this.box[0].y += this.direction.y * 10;
+            this.box[0].x = x;
+            this.box[0].y = y;
         // console.log(this.box[0].x)
-        if(this.box[0].x >= 650){
-            let c = 0;
-            this.box.forEach(p=> {
-               p.x = c;
-               c=+17;
-            //    console.log(p.x)
-            } )
-        }
+        this.wallRetourn();
+
         console.log("coordX", this.box[0].x)
         console.log("coordY", this.box[0].y)
         if(this.box[0].x === this.apple.x && this.box[0].y === this.apple.y){
